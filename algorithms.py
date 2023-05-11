@@ -27,6 +27,40 @@ def dummy_subjects(half_hours):
     for sub in subs_sbset:
         hrs_assigned = random.randint(0,half_hours)
         half_hours -= hrs_assigned
-        sub_det = (sub,random.randint(0,hrs_assigned))
+        sub_det = [sub,random.randint(0,hrs_assigned)]
         subs.append(sub_det)
     return subs
+
+
+
+#----Algorithms----
+
+#Allocates number of half_hours for each subject with unallocated half_hours
+def sub_hours(num_half_hours, subs):
+    subs.sort(reverse=True,key=lambda x:x[1])
+    i = 0
+    while i < len(subs) and subs[i][1] != 0:
+        num_half_hours-=subs[i][1]
+        i+=1
+    if len(subs)-i==0:
+        return 0
+    half_hours_per_remaining_sub = num_half_hours//(len(subs) - i)
+    remaining_half_hours = num_half_hours % (len(subs)-i)
+    for j in range(i,len(subs)):
+        subs[j][1] += half_hours_per_remaining_sub
+        if remaining_half_hours != 0:
+            subs[j][1]+=1
+            remaining_half_hours-=1
+
+#breaks each subject n half_hour sessions where n is determined by the user, n can be 1,2,3 or 4
+def study_session_breaker(subs,sess_len):
+    sessions = []
+    for i in subs:
+        curr_sub = [i[0]]
+        num_full_sess = i[1]//sess_len
+        remaining_half_hrs = i[1]%sess_len
+        curr_sub.extend([sess_len]*num_full_sess)
+        if remaining_half_hrs != 0:
+            curr_sub.append(remaining_half_hrs)
+        sessions.append(curr_sub)
+    return sessions
